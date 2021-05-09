@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
         <PackageId>Virpil.Communicator</PackageId>
-        <PackageVersion>1.0.0</PackageVersion>
+        <PackageVersion>1.1.0</PackageVersion>
         <Title>Virpil Communicator</Title>
         <Authors>charliefoxtwo</Authors>
         <Description>A small library for communicating with Virpil devices. Currently supports setting LED state.</Description>
@@ -17,7 +17,7 @@
         <PackageIconUrl>https://raw.githubusercontent.com/charliefoxtwo/Virpil-Communicator/main/VirpilCommunicator/resources/led.png</PackageIconUrl>
         <PackageIcon>led.png</PackageIcon>
         <PackageTags>dcs</PackageTags>
-        <PackageReleaseNotes>Initial release of Virpil Communicator</PackageReleaseNotes>
+        <PackageReleaseNotes>Added Control panel #1 PID</PackageReleaseNotes>
     </PropertyGroup>
 
     <ItemGroup>

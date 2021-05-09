@@ -99,3 +99,4 @@ This means that each channel has just 4 states - off *[00]*, and 3 intensities o
 
 - [Package icon](https://www.flaticon.com/authors/those-icons)
 - [readme tools](https://readme.so)
+- [badges](https://shields.io)
