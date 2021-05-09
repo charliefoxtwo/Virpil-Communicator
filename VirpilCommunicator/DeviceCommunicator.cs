@@ -8,6 +8,7 @@ namespace Virpil.Communicator
     public class DeviceCommunicator
     {
         public const ushort VID = 0x3344;
+        public const string ControlPanel1Pid = "0259";
         public const string ControlPanel2Pid = "825B";
         public const string ThrottleCM2Pid = "8193";
 
