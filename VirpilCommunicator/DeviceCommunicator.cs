@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using HidLibrary;
 using Microsoft.Extensions.Logging;
@@ -12,6 +13,8 @@ namespace Virpil.Communicator
         public const string ControlPanel2Pid = "825B";
         public const string ThrottleCM2Pid = "8193";
 
+        public ushort PID { get; }
+
         private readonly HidDevice _device;
 
         private readonly ILogger<DeviceCommunicator> _log;
@@ -24,15 +27,37 @@ namespace Virpil.Communicator
         /// <param name="log">Logger for use by the class</param>
         public DeviceCommunicator(ushort pid, ILogger<DeviceCommunicator> log)
         {
+            PID = pid;
             _device = HidDevices.Enumerate(VID, pid).First(d => d.Capabilities.FeatureReportByteLength > 0);
             _log = log;
         }
 
+        /// <summary>
+        /// Sends an LED command to the device
+        /// </summary>
+        /// <param name="boardType">The type of board the command is being sent to</param>
+        /// <param name="ledNumber">The LED number</param>
+        /// <param name="red">Power of the red hue</param>
+        /// <param name="green">Power of the green hue</param>
+        /// <param name="blue">Power of the blue hue</param>
+        /// <returns></returns>
         public bool SendCommand(BoardType boardType, int ledNumber, LedPower red, LedPower green, LedPower blue)
         {
             var packet = PacketForCommand(boardType, ledNumber, red, green, blue);
             _log.LogDebug($"Sending {red}, {green}, {blue} to {boardType} #{ledNumber}", red, green, blue, boardType, ledNumber);
             return _device.WriteFeatureData(packet);
+        }
+
+        /// <summary>
+        /// Enumerates all usb devices with the Virpil VID connected to the system
+        /// </summary>
+        /// <param name="loggerFactory">factory to create device loggers from</param>
+        /// <returns>All connected virpil devices</returns>
+        public static IEnumerable<DeviceCommunicator> AllConnectedVirpilDevices(ILoggerFactory loggerFactory)
+        {
+            return HidDevices.Enumerate(VID).Where(d => d.Capabilities.FeatureReportByteLength > 0).Select(d =>
+                new DeviceCommunicator((ushort) d.Attributes.ProductId,
+                    loggerFactory.CreateLogger<DeviceCommunicator>()));
         }
 
         private static byte[] PacketForCommand(BoardType boardType, int ledNumber, LedPower red, LedPower green, LedPower blue)

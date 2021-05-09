@@ -14,7 +14,7 @@ This package allows you to talk to Virpil HID devices. It's fairly feature limit
 var controlPanel2 = new DeviceCommunicator(0x825B);
 
 // set LED #1 on the panel to #FFFFFF (white)
-panel2.SendCommand(BoardType.OnBoard, 1, LedPower.Full, LedPower.Full, LedPower.Full);
+controlPanel2.SendCommand(BoardType.OnBoard, 1, LedPower.Full, LedPower.Full, LedPower.Full);
 ```
 
 
@@ -60,7 +60,7 @@ Defines the [color](#The Color Byte) the LED should be set to.
 Not really sure what this one does either, but it seems to close out every data fragment.
 
 ### The Color Byte
-Since color is sent over a single byte, we effectively get 6-bit (2-2-2) color. A sample color might look something like this:
+Since color is sent over a single byte, we effectively get [6-bit](https://lospec.com/palette-list/6-bit-rgb) (2-2-2) color (note the colors at that link are slightly different from the ones you'll see on your hardware, as your hardware uses 25/50/100% instead of 33/67/100%). A sample color might look something like this:
 ```
 1010 1100
 ```
