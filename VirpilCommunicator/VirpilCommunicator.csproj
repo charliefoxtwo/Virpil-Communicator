@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <PackageId>Virpil.Communicator</PackageId>
+        <PackageVersion>0.1.0-alpha</PackageVersion>
+        <Title>Virpil Communicator</Title>
+        <Authors>charliefoxtwo</Authors>
+        <Description>A small library for communicating with Virpil devices. Currently supports setting LED state.</Description>
+        <PackageProjectUrl>https://github.com/charliefoxtwo/Virpil-Communicator</PackageProjectUrl>
+        <PackageLicenseUrl>https://www.gnu.org/licenses/gpl-3.0.en.html</PackageLicenseUrl>
+        <RepositoryUrl>https://github.com/charliefoxtwo/Virpil-Communicator</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <RootNamespace>Virpil.Communicator</RootNamespace>
+        <Nullable>enable</Nullable>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageIconUrl>https://raw.githubusercontent.com/charliefoxtwo/Virpil-Communicator/main/VirpilCommunicator/resources/led.png</PackageIconUrl>
+        <PackageIcon>led.png</PackageIcon>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="hidlibrary" Version="3.3.40" />
+      <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="resources/led.png" Pack="true" PackagePath="" />
+    </ItemGroup>
+
+</Project>
