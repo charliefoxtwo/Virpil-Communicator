@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using HidLibrary;
 using Microsoft.Extensions.Logging;
@@ -28,6 +28,15 @@ namespace Virpil.Communicator
             _log = log;
         }
 
+        /// <summary>
+        /// Sends an LED command to the device
+        /// </summary>
+        /// <param name="boardType">The type of board the command is being sent to</param>
+        /// <param name="ledNumber">The LED number</param>
+        /// <param name="red">Power of the red hue</param>
+        /// <param name="green">Power of the green hue</param>
+        /// <param name="blue">Power of the blue hue</param>
+        /// <returns></returns>
         public bool SendCommand(BoardType boardType, int ledNumber, LedPower red, LedPower green, LedPower blue)
         {
             var packet = PacketForCommand(boardType, ledNumber, red, green, blue);

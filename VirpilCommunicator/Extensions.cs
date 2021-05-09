@@ -31,7 +31,7 @@ namespace Virpil.Communicator
                 !LedPowerStrings.TryGetValue(color[2..4], out var green) ||
                 !LedPowerStrings.TryGetValue(color[4..6], out var blue))
             {
-                throw new ArgumentException("argument must be formatted in 6-bit hex color", nameof(color));
+                throw new ArgumentException($"argument must be formatted in 6-bit hex color (got {color})", nameof(color));
             }
 
             return (red, green, blue);
