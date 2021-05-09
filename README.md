@@ -14,7 +14,7 @@ This package allows you to talk to Virpil HID devices. It's fairly feature limit
 var controlPanel2 = new DeviceCommunicator(0x825B);
 
 // set LED #1 on the panel to #FFFFFF (white)
-panel2.SendCommand(BoardType.OnBoard, 1, LedPower.Full, LedPower.Full, LedPower.Full);
+controlPanel2.SendCommand(BoardType.OnBoard, 1, LedPower.Full, LedPower.Full, LedPower.Full);
 ```
 
 
