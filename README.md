@@ -1,9 +1,9 @@
 ﻿# Virpil Communicator
 
-![Nuget](https://img.shields.io/nuget/v/Virpil.Communicator?style=flat-square)
+[![Nuget](https://img.shields.io/nuget/v/Virpil.Communicator?style=flat-square)](https://www.nuget.org/packages/Virpil.Communicator/)
 [![.NET 5 CI build](https://github.com/charliefoxtwo/Virpil-Communicator/actions/workflows/ci-build.yml/badge.svg?branch=develop)](https://github.com/charliefoxtwo/Virpil-Communicator/actions/workflows/ci-build.yml)
-![GitHub](https://img.shields.io/github/license/charliefoxtwo/Virpil-Communicator?style=flat-square)
-![Discord](https://img.shields.io/discord/840762843917582347?style=flat-square)
+[![GitHub](https://img.shields.io/github/license/charliefoxtwo/Virpil-Communicator?style=flat-square)](LICENSE)
+[![Discord](https://img.shields.io/discord/840762843917582347?style=flat-square)](https://discord.gg/rWAF3AdsKT)
 
 This package allows you to talk to Virpil HID devices. It's fairly feature limited at this moment and is currently designed for firmware version **20210102**.
 
