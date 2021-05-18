@@ -7,6 +7,8 @@
 
 This package allows you to talk to Virpil HID devices. It's fairly feature limited at this moment and is currently designed for firmware version **20210102**.
 
+<img src="https://raw.githubusercontent.com/charliefoxtwo/Virpil-Communicator/main/VirpilCommunicator/resources/led.png" alt="Virpil Communicator logo - a vector outline of an led" width="150" />
+
 ## Usage/Examples
 
 ```c#
