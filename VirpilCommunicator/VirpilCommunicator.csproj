@@ -22,7 +22,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="hidlibrary" Version="3.3.40" />
+      <PackageReference Include="HidSharp" Version="2.1.0" />
       <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
     </ItemGroup>
 
