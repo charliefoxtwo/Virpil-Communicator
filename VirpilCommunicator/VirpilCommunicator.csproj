@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
         <PackageId>Virpil.Communicator</PackageId>
-        <PackageVersion>1.3.0</PackageVersion>
+        <PackageVersion>2.0.0</PackageVersion>
         <Title>Virpil Communicator</Title>
         <Authors>charliefoxtwo</Authors>
         <Description>A small library for communicating with Virpil devices. Currently supports setting LED state.</Description>
@@ -17,10 +17,10 @@
         <PackageIconUrl>https://raw.githubusercontent.com/charliefoxtwo/Virpil-Communicator/main/VirpilCommunicator/resources/led.png</PackageIconUrl>
         <PackageIcon>led.png</PackageIcon>
         <PackageTags>dcs</PackageTags>
-        <PackageReleaseNotes> - Switched to a cross-platform HID library (tested on windows + mac)
- - `DeviceCommunicator` now implements `IDisposable`
- - Device PID hashsets have now been added since some devices have more than one PID
- - Logging string building issue fixed</PackageReleaseNotes>
+        <PackageReleaseNotes> - hot plugging support enabled
+ - static methods moved to VirpilMonitor singleton</PackageReleaseNotes>
+        <AssemblyVersion>2.0.0</AssemblyVersion>
+        <FileVersion>2.0.0</FileVersion>
     </PropertyGroup>
 
     <ItemGroup>

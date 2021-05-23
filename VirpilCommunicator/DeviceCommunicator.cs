@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using HidSharp;
 using Microsoft.Extensions.Logging;
@@ -8,22 +7,6 @@ namespace Virpil.Communicator
 {
     public class DeviceCommunicator : IDisposable
     {
-        public const ushort VID = 0x3344;
-
-        public readonly HashSet<ushort> ControlPanel1Pids = new() { 0x0259 };
-        public readonly HashSet<ushort> ControlPanel2Pids = new() { 0x025B, 0x825B };
-        public readonly HashSet<ushort> ThrottleCM2Pids = new() { 0x8193 };
-        public readonly HashSet<ushort> ThrottleCM3Pids = new() { 0x0194, 0x8194 };
-
-        [Obsolete("Use ControlPanel1Pids instead")]
-        public const string ControlPanel1Pid = "0259";
-        [Obsolete("Use ControlPanel2Pids instead")]
-        public const string ControlPanel2Pid = "825B";
-        [Obsolete("Use ThrottleCM2Pids instead")]
-        public const string ThrottleCM2Pid = "8193";
-        [Obsolete("Use ThrottleCM3Pids instead")]
-        public const string ThrottleCM3Pid = "8194";
-
         public ushort PID { get; }
 
         private readonly HidStream? _stream;
@@ -34,15 +17,15 @@ namespace Virpil.Communicator
         /// Creates a new device communicator with the first HID device matching the vendor id and product id and which
         /// has <code>FeatureReportByteLength > 0</code>. In theory this should always return the correct device.
         /// </summary>
-        /// <param name="pid">The product id, e.g. <see cref="ControlPanel2Pid"/> or <see cref="ThrottleCM2Pid"/></param>
+        /// <param name="pid">The product id, e.g. <see cref="VirpilMonitor.ControlPanel2Pids"/></param>
         /// <param name="log">Logger for use by the class</param>
         public DeviceCommunicator(ushort pid, ILogger<DeviceCommunicator> log) : this(
-            DeviceList.Local.GetHidDevices(VID, pid).FirstOrDefault(d => d.GetMaxFeatureReportLength() > 0), log)
+            DeviceList.Local.GetHidDevices(VirpilMonitor.VID, pid).FirstOrDefault(d => d.GetMaxFeatureReportLength() > 0), log)
         {
 
         }
 
-        private DeviceCommunicator(HidDevice? device, ILogger<DeviceCommunicator> log)
+        internal DeviceCommunicator(HidDevice? device, ILogger<DeviceCommunicator> log)
         {
             PID = (ushort) (device?.ProductID ?? 0);
             _stream = device?.Open();
@@ -67,17 +50,6 @@ namespace Virpil.Communicator
 
             _stream.SetFeature(packet);
             return true;
-        }
-
-        /// <summary>
-        /// Enumerates all usb devices with the Virpil VID connected to the system
-        /// </summary>
-        /// <param name="loggerFactory">factory to create device loggers from</param>
-        /// <returns>All connected virpil devices</returns>
-        public static IEnumerable<DeviceCommunicator> AllConnectedVirpilDevices(ILoggerFactory loggerFactory)
-        {
-            return DeviceList.Local.GetHidDevices(VID).Where(d => d.GetMaxFeatureReportLength() > 0).Select(d =>
-                new DeviceCommunicator(d, loggerFactory.CreateLogger<DeviceCommunicator>()));
         }
 
         private static byte[] PacketForCommand(BoardType boardType, int ledNumber, LedPower red, LedPower green, LedPower blue)
