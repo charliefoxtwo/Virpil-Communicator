@@ -5,7 +5,7 @@
 [![GitHub](https://img.shields.io/github/license/charliefoxtwo/Virpil-Communicator?style=flat-square)](LICENSE)
 [![Discord](https://img.shields.io/discord/840762843917582347?style=flat-square)](https://discord.gg/rWAF3AdsKT)
 
-This package allows you to talk to Virpil HID devices. It's fairly feature limited at this moment and is currently designed for firmware version **20210102**.
+**Virpil Communicator** allows you to talk to Virpil HID devices. It is cross-platform and has been tested on Windows and Mac. It's fairly feature limited at this moment and is currently designed for firmware version **20210102**.
 
 <img src="https://raw.githubusercontent.com/charliefoxtwo/Virpil-Communicator/main/VirpilCommunicator/resources/led.png" alt="Virpil Communicator logo - a vector outline of an led" width="150" />
 
@@ -46,7 +46,7 @@ For our purposes, this is the type of board you're communicating with. Possible 
  - `0x66`: on-board : used when the led you want to modify is on the device you're communicating with
  - `0x67`: slave-board : used when the led you want to modify is on a slave device of the device you're communicating with
 
-#### 02: `05`
+#### 0x02: `0x05`
 This is the id of the command you are running. You can view these commands in the VPC_LED_Control tool, but I'll list them here too.
  - `0x00`: used to set all leds back to default
  - `0x01`-`0x04`: used for setting add-board leds 1-4
@@ -54,7 +54,7 @@ This is the id of the command you are running. You can view these commands in th
  - `0x19`-`0x2C`: used for setting slave-board leds 1-20
 
 #### 0x05: `0x80`
-Defines the [color](#The Color Byte) the LED should be set to. 
+Defines the [color](#the-color-byte) the LED should be set to. 
 
 > **NOTE!** the position of this byte varies depending on the led being modified. For example, if you were modifying LED 2 this would be in slot 06, if you were modifying LED 15 this would be in slot 19, etc.
 
