@@ -1,11 +1,13 @@
 ﻿# Virpil Communicator
 
-![Nuget](https://img.shields.io/nuget/v/Virpil.Communicator?style=flat-square)
+[![Nuget](https://img.shields.io/nuget/v/Virpil.Communicator?style=flat-square)](https://www.nuget.org/packages/Virpil.Communicator/)
 [![.NET 5 CI build](https://github.com/charliefoxtwo/Virpil-Communicator/actions/workflows/ci-build.yml/badge.svg?branch=develop)](https://github.com/charliefoxtwo/Virpil-Communicator/actions/workflows/ci-build.yml)
-![GitHub](https://img.shields.io/github/license/charliefoxtwo/Virpil-Communicator?style=flat-square)
-![Discord](https://img.shields.io/discord/840762843917582347?style=flat-square)
+[![GitHub](https://img.shields.io/github/license/charliefoxtwo/Virpil-Communicator?style=flat-square)](LICENSE)
+[![Discord](https://img.shields.io/discord/840762843917582347?style=flat-square)](https://discord.gg/rWAF3AdsKT)
 
-This package allows you to talk to Virpil HID devices. It's fairly feature limited at this moment and is currently designed for firmware version **20210102**.
+**Virpil Communicator** allows you to talk to Virpil HID devices. It is cross-platform and has been tested on Windows and Mac. It's fairly feature limited at this moment and is currently designed for firmware version **20210102**.
+
+<img src="https://raw.githubusercontent.com/charliefoxtwo/Virpil-Communicator/main/VirpilCommunicator/resources/led.png" alt="Virpil Communicator logo - a vector outline of an led" width="150" />
 
 ## Usage/Examples
 
@@ -34,29 +36,29 @@ This data should be written as a `Feature`.
 
 ### Understanding the bytes
 
-#### 00: `02`
+#### 0x00: `0x02`
 I'm not sure what this is for, but it's at the start of every data fragment
 
-#### 01: `66`
+#### 0x01: `0x66`
 For our purposes, this is the type of board you're communicating with. Possible values are:
- - `64`: default : used to set all leds back to their default settings that were set with the profile
- - `65`: add-board : I'm not sure what this is for
- - `66`: on-board : used when the led you want to modify is on the device you're communicating with
- - `67`: slave-board : used when the led you want to modify is on a slave device of the device you're communicating with
+ - `0x64`: default : used to set all leds back to their default settings that were set with the profile
+ - `0x65`: add-board : I'm not sure what this is for
+ - `0x66`: on-board : used when the led you want to modify is on the device you're communicating with
+ - `0x67`: slave-board : used when the led you want to modify is on a slave device of the device you're communicating with
 
-#### 02: `05`
+#### 0x02: `0x05`
 This is the id of the command you are running. You can view these commands in the VPC_LED_Control tool, but I'll list them here too.
- - `00`: used to set all leds back to default
- - `01`-`04`: used for setting add-board leds 1-4
- - `05`-`24`: used for setting on-board leds 1-20
- - `25`-`44`: used for setting slave-board leds 1-20
+ - `0x00`: used to set all leds back to default
+ - `0x01`-`0x04`: used for setting add-board leds 1-4
+ - `0x05`-`0x18`: used for setting on-board leds 1-20
+ - `0x19`-`0x2C`: used for setting slave-board leds 1-20
 
-#### 05: `80`
-Defines the [color](#The Color Byte) the LED should be set to. 
+#### 0x05: `0x80`
+Defines the [color](#the-color-byte) the LED should be set to. 
 
 > **NOTE!** the position of this byte varies depending on the led being modified. For example, if you were modifying LED 2 this would be in slot 06, if you were modifying LED 15 this would be in slot 19, etc.
 
-#### 25: `f0`
+#### 0x25: `0xf0`
 Not really sure what this one does either, but it seems to close out every data fragment.
 
 ### The Color Byte

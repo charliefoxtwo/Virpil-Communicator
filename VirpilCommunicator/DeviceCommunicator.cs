@@ -1,21 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using HidLibrary;
+using HidSharp;
 using Microsoft.Extensions.Logging;
 
 namespace Virpil.Communicator
 {
-    public class DeviceCommunicator
+    public class DeviceCommunicator : IDisposable
     {
         public const ushort VID = 0x3344;
+
+        public readonly HashSet<ushort> ControlPanel1Pids = new() { 0x0259 };
+        public readonly HashSet<ushort> ControlPanel2Pids = new() { 0x025B, 0x825B };
+        public readonly HashSet<ushort> ThrottleCM2Pids = new() { 0x8193 };
+        public readonly HashSet<ushort> ThrottleCM3Pids = new() { 0x0194, 0x8194 };
+
+        [Obsolete("Use ControlPanel1Pids instead")]
         public const string ControlPanel1Pid = "0259";
+        [Obsolete("Use ControlPanel2Pids instead")]
         public const string ControlPanel2Pid = "825B";
+        [Obsolete("Use ThrottleCM2Pids instead")]
         public const string ThrottleCM2Pid = "8193";
+        [Obsolete("Use ThrottleCM3Pids instead")]
+        public const string ThrottleCM3Pid = "8194";
 
         public ushort PID { get; }
 
-        private readonly HidDevice _device;
+        private readonly HidStream? _stream;
 
         private readonly ILogger<DeviceCommunicator> _log;
 
@@ -25,10 +36,16 @@ namespace Virpil.Communicator
         /// </summary>
         /// <param name="pid">The product id, e.g. <see cref="ControlPanel2Pid"/> or <see cref="ThrottleCM2Pid"/></param>
         /// <param name="log">Logger for use by the class</param>
-        public DeviceCommunicator(ushort pid, ILogger<DeviceCommunicator> log)
+        public DeviceCommunicator(ushort pid, ILogger<DeviceCommunicator> log) : this(
+            DeviceList.Local.GetHidDevices(VID, pid).FirstOrDefault(d => d.GetMaxFeatureReportLength() > 0), log)
         {
-            PID = pid;
-            _device = HidDevices.Enumerate(VID, pid).First(d => d.Capabilities.FeatureReportByteLength > 0);
+
+        }
+
+        private DeviceCommunicator(HidDevice? device, ILogger<DeviceCommunicator> log)
+        {
+            PID = (ushort) (device?.ProductID ?? 0);
+            _stream = device?.Open();
             _log = log;
         }
 
@@ -43,9 +60,13 @@ namespace Virpil.Communicator
         /// <returns></returns>
         public bool SendCommand(BoardType boardType, int ledNumber, LedPower red, LedPower green, LedPower blue)
         {
+            if (_stream is null) return false;
+
             var packet = PacketForCommand(boardType, ledNumber, red, green, blue);
-            _log.LogDebug($"Sending {red}, {green}, {blue} to {boardType} #{ledNumber}", red, green, blue, boardType, ledNumber);
-            return _device.WriteFeatureData(packet);
+            _log.LogDebug("Sending {Red}, {Green}, {Blue} to {BoardType} #{LedNumber}", red, green, blue, boardType, ledNumber);
+
+            _stream.SetFeature(packet);
+            return true;
         }
 
         /// <summary>
@@ -55,9 +76,8 @@ namespace Virpil.Communicator
         /// <returns>All connected virpil devices</returns>
         public static IEnumerable<DeviceCommunicator> AllConnectedVirpilDevices(ILoggerFactory loggerFactory)
         {
-            return HidDevices.Enumerate(VID).Where(d => d.Capabilities.FeatureReportByteLength > 0).Select(d =>
-                new DeviceCommunicator((ushort) d.Attributes.ProductId,
-                    loggerFactory.CreateLogger<DeviceCommunicator>()));
+            return DeviceList.Local.GetHidDevices(VID).Where(d => d.GetMaxFeatureReportLength() > 0).Select(d =>
+                new DeviceCommunicator(d, loggerFactory.CreateLogger<DeviceCommunicator>()));
         }
 
         private static byte[] PacketForCommand(BoardType boardType, int ledNumber, LedPower red, LedPower green, LedPower blue)
@@ -103,6 +123,12 @@ namespace Virpil.Communicator
                 BoardType.SlaveBoard => (byte) (24 + ledNumber),
                 _ => throw new ArgumentOutOfRangeException(nameof(boardType), boardType, null)
             };
+        }
+
+        public void Dispose()
+        {
+            _stream?.Dispose();
+            GC.SuppressFinalize(this);
         }
     }
 }
