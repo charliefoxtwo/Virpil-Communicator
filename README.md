@@ -13,12 +13,30 @@
 
 ```c#
 // 0x825B is the PID of Virpil Control Panel #2
-var controlPanel2 = new DeviceCommunicator(0x825B);
+var controlPanel2 = new DeviceCommunicator(0x825B, logger);
 
 // set LED #1 on the panel to #FFFFFF (white)
 controlPanel2.SendCommand(BoardType.OnBoard, 1, LedPower.Full, LedPower.Full, LedPower.Full);
 ```
 
+```c#
+// initialize a new device monitor
+var monitor = VirpilMonitor.Initialize(loggerFactory);
+
+// try to get the device - it may have been disconnected
+if (!_monitor.TryGetDevice(0x825B, out var cp2))
+{
+    // set LED #1 on the panel to #FFFFFF (white)
+    cp2.SendCommand(BoardType.OnBoard, 1, LedPower.Full, LedPower.Full, LedPower.Full);
+}
+```
+
+```c#
+// initialize a new device monitor
+var monitor = VirpilMonitor.Initialize(loggerFactory);
+
+var numberOfDevices = _monitor.AllConnectedVirpilDevices.Count;
+```
 
 ## Packet structure
 
