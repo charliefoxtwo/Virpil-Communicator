@@ -24,7 +24,7 @@ controlPanel2.SendCommand(BoardType.OnBoard, 1, LedPower.Full, LedPower.Full, Le
 var monitor = VirpilMonitor.Initialize(loggerFactory);
 
 // try to get the device - it may have been disconnected
-if (!_monitor.TryGetDevice(0x825B, out var cp2))
+if (_monitor.TryGetDevice(0x825B, out var cp2))
 {
     // set LED #1 on the panel to #FFFFFF (white)
     cp2.SendCommand(BoardType.OnBoard, 1, LedPower.Full, LedPower.Full, LedPower.Full);
