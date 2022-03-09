@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <PackageId>Virpil.Communicator</PackageId>
         <PackageVersion>2.0.0</PackageVersion>
         <Title>Virpil Communicator</Title>
@@ -21,6 +21,7 @@
  - static methods moved to VirpilMonitor singleton</PackageReleaseNotes>
         <AssemblyVersion>2.0.0</AssemblyVersion>
         <FileVersion>2.0.0</FileVersion>
+        <LangVersion>default</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
