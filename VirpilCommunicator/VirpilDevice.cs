@@ -1,34 +1,25 @@
-using System;
+﻿using System;
 using System.Linq;
 using HidSharp;
 using Microsoft.Extensions.Logging;
 
 namespace Virpil.Communicator
 {
-    public class DeviceCommunicator : IDevice, IDisposable
+    public class VirpilDevice : IVirpilDevice, IDisposable
     {
         public ushort PID { get; }
 
-        private readonly HidStream? _stream;
+        public string Serial { get; }
 
-        private readonly ILogger<DeviceCommunicator> _log;
+        private readonly HidStream _stream;
 
-        /// <summary>
-        /// Creates a new device communicator with the first HID device matching the vendor id and product id and which
-        /// has <code>FeatureReportByteLength > 0</code>. In theory this should always return the correct device.
-        /// </summary>
-        /// <param name="pid">The product id, e.g. <see cref="VirpilMonitor.ControlPanel2Pids"/></param>
-        /// <param name="log">Logger for use by the class</param>
-        public DeviceCommunicator(ushort pid, ILogger<DeviceCommunicator> log) : this(
-            DeviceList.Local.GetHidDevices(VirpilMonitor.VID, pid).FirstOrDefault(d => d.GetMaxFeatureReportLength() > 0), log)
+        private readonly ILogger<VirpilDevice> _log;
+
+        public VirpilDevice(HidDevice device, ILogger<VirpilDevice> log)
         {
-
-        }
-
-        internal DeviceCommunicator(HidDevice? device, ILogger<DeviceCommunicator> log)
-        {
-            PID = (ushort) (device?.ProductID ?? 0);
-            _stream = device?.Open();
+            PID = (ushort) device.ProductID;
+            Serial = device.GetSerialNumber();
+            _stream = device.Open();
             _log = log;
         }
 
@@ -43,8 +34,6 @@ namespace Virpil.Communicator
         /// <returns></returns>
         public bool SendCommand(BoardType boardType, int ledNumber, LedPower red, LedPower green, LedPower blue)
         {
-            if (_stream is null) return false;
-
             var packet = PacketForCommand(boardType, ledNumber, red, green, blue);
             _log.LogDebug("Sending {Red}, {Green}, {Blue} to {BoardType} #{LedNumber}", red, green, blue, boardType, ledNumber);
 
@@ -99,7 +88,7 @@ namespace Virpil.Communicator
 
         public void Dispose()
         {
-            _stream?.Dispose();
+            _stream.Dispose();
             GC.SuppressFinalize(this);
         }
     }

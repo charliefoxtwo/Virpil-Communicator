@@ -1,6 +1,6 @@
 ﻿namespace Virpil.Communicator
 {
-    public interface IDevice
+    public interface IVirpilDevice
     {
         ushort PID { get; }
 

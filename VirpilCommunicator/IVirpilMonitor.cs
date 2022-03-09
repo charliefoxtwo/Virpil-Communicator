@@ -9,14 +9,14 @@ namespace Virpil.Communicator
         /// Attempts to fetch a device, if it exists.
         /// </summary>
         /// <param name="pid">The PID of the device to fetch</param>
-        /// <param name="device">The device, if found, otherwise null</param>
+        /// <param name="virpilDevice">The device, if found, otherwise null</param>
         /// <returns></returns>
-        bool TryGetDevice(ushort pid, [MaybeNullWhen(false)] out IDevice device);
+        bool TryGetDevice(ushort pid, [MaybeNullWhen(false)] out IVirpilDevice virpilDevice);
 
         /// <summary>
         /// Enumerates all usb devices with the Virpil VID connected to the system
         /// </summary>
         /// <returns>All connected virpil devices</returns>
-        ICollection<IDevice> AllConnectedVirpilDevices { get; }
+        ICollection<IVirpilDevice> AllConnectedVirpilDevices { get; }
     }
 }

@@ -16,7 +16,7 @@ namespace Virpil.Communicator
         public static readonly HashSet<ushort> ThrottleCM2Pids = new() { 0x8193 };
         public static readonly HashSet<ushort> ThrottleCM3Pids = new() { 0x0194, 0x8194 };
 
-        private readonly ConcurrentDictionary<ushort, IDevice> _devices;
+        private readonly ConcurrentDictionary<ushort, IVirpilDevice> _devices;
 
         private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger<VirpilMonitor> _log;
@@ -25,19 +25,19 @@ namespace Virpil.Communicator
 
         private static readonly object InitLock = new();
 
-        private VirpilMonitor(ILoggerFactory loggerFactory, IEnumerable<IDevice> devices)
+        private VirpilMonitor(ILoggerFactory loggerFactory, IEnumerable<IVirpilDevice> devices)
         {
             DeviceList.Local.Changed += OnDeviceListChanged;
             _loggerFactory = loggerFactory;
             _log = loggerFactory.CreateLogger<VirpilMonitor>();
-            _devices = new ConcurrentDictionary<ushort, IDevice>(devices.ToDictionary(d => d.PID));
+            _devices = new ConcurrentDictionary<ushort, IVirpilDevice>(devices.ToDictionary(d => d.PID));
         }
 
         /// <summary>
         /// Initializes a new instance of VirpilMonitor. Calling this method multiple times will have no effect and will
         /// return the already-initialized instance.
         /// </summary>
-        /// <param name="loggerFactory">LoggerFactory used when creating loggers for new DeviceCommunicator instances</param>
+        /// <param name="loggerFactory">LoggerFactory used when creating loggers for new VirpilDevice instances</param>
         /// <returns>Instance of VirpilMonitor</returns>
         public static VirpilMonitor Initialize(ILoggerFactory loggerFactory)
         {
@@ -48,7 +48,7 @@ namespace Virpil.Communicator
                 if (_instance is not null) return _instance;
 
                 var devices = DeviceList.Local.GetHidDevices(VID).Where(d => d.GetMaxFeatureReportLength() > 0).Select(d =>
-                    new DeviceCommunicator(d, loggerFactory.CreateLogger<DeviceCommunicator>()));
+                    new VirpilDevice(d, loggerFactory.CreateLogger<VirpilDevice>()));
                 _instance = new VirpilMonitor(loggerFactory, devices);
                 return _instance;
             }
@@ -83,18 +83,18 @@ namespace Virpil.Communicator
         /// Attempts to fetch a device, if it exists.
         /// </summary>
         /// <param name="pid">The PID of the device to fetch</param>
-        /// <param name="deviceCommunicator">The device, if found, otherwise null</param>
+        /// <param name="virpilDevice">The device, if found, otherwise null</param>
         /// <returns></returns>
-        public bool TryGetDevice(ushort pid, [MaybeNullWhen(false)] out IDevice deviceCommunicator)
+        public bool TryGetDevice(ushort pid, [MaybeNullWhen(false)] out IVirpilDevice virpilDevice)
         {
-            return _devices.TryGetValue(pid, out deviceCommunicator);
+            return _devices.TryGetValue(pid, out virpilDevice);
         }
 
         /// <summary>
         /// Enumerates all usb devices with the Virpil VID connected to the system
         /// </summary>
         /// <returns>All connected virpil devices</returns>
-        public ICollection<IDevice> AllConnectedVirpilDevices => _devices.Values;
+        public ICollection<IVirpilDevice> AllConnectedVirpilDevices => _devices.Values;
 
         private void OnDeviceListChanged(object? sender, DeviceListChangedEventArgs e)
         {
@@ -114,7 +114,7 @@ namespace Virpil.Communicator
                 {
                     _log.LogInformation("Detected new device {DevicePid:x4}", device.ProductID);
                     _devices.TryAdd((ushort) device.ProductID,
-                        new DeviceCommunicator(device, _loggerFactory.CreateLogger<DeviceCommunicator>()));
+                        new VirpilDevice(device, _loggerFactory.CreateLogger<VirpilDevice>()));
                 }
             }
 
