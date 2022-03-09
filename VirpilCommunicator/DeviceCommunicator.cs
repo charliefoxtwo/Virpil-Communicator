@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Linq;
 using HidSharp;
 using Microsoft.Extensions.Logging;
 
 namespace Virpil.Communicator
 {
-    public class DeviceCommunicator : IDisposable
+    public class DeviceCommunicator : IDevice, IDisposable
     {
         public ushort PID { get; }
 

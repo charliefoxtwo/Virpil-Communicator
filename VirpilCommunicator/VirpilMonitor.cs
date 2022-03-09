@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Virpil.Communicator
 {
-    public class VirpilMonitor
+    public class VirpilMonitor : IVirpilMonitor
     {
         public const ushort VID = 0x3344;
 
@@ -16,7 +16,7 @@ namespace Virpil.Communicator
         public static readonly HashSet<ushort> ThrottleCM2Pids = new() { 0x8193 };
         public static readonly HashSet<ushort> ThrottleCM3Pids = new() { 0x0194, 0x8194 };
 
-        private readonly ConcurrentDictionary<ushort, DeviceCommunicator> _devices;
+        private readonly ConcurrentDictionary<ushort, IDevice> _devices;
 
         private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger<VirpilMonitor> _log;
@@ -25,12 +25,12 @@ namespace Virpil.Communicator
 
         private static readonly object InitLock = new();
 
-        private VirpilMonitor(ILoggerFactory loggerFactory, IEnumerable<DeviceCommunicator> devices)
+        private VirpilMonitor(ILoggerFactory loggerFactory, IEnumerable<IDevice> devices)
         {
             DeviceList.Local.Changed += OnDeviceListChanged;
             _loggerFactory = loggerFactory;
             _log = loggerFactory.CreateLogger<VirpilMonitor>();
-            _devices = new ConcurrentDictionary<ushort, DeviceCommunicator>(devices.ToDictionary(d => d.PID));
+            _devices = new ConcurrentDictionary<ushort, IDevice>(devices.ToDictionary(d => d.PID));
         }
 
         /// <summary>
@@ -83,18 +83,18 @@ namespace Virpil.Communicator
         /// Attempts to fetch a device, if it exists.
         /// </summary>
         /// <param name="pid">The PID of the device to fetch</param>
-        /// <param name="device">The device, if found, otherwise null</param>
+        /// <param name="deviceCommunicator">The device, if found, otherwise null</param>
         /// <returns></returns>
-        public bool TryGetDevice(ushort pid, [MaybeNullWhen(false)] out DeviceCommunicator device)
+        public bool TryGetDevice(ushort pid, [MaybeNullWhen(false)] out IDevice deviceCommunicator)
         {
-            return _devices.TryGetValue(pid, out device);
+            return _devices.TryGetValue(pid, out deviceCommunicator);
         }
 
         /// <summary>
         /// Enumerates all usb devices with the Virpil VID connected to the system
         /// </summary>
         /// <returns>All connected virpil devices</returns>
-        public ICollection<DeviceCommunicator> AllConnectedVirpilDevices => _devices.Values;
+        public ICollection<IDevice> AllConnectedVirpilDevices => _devices.Values;
 
         private void OnDeviceListChanged(object? sender, DeviceListChangedEventArgs e)
         {
