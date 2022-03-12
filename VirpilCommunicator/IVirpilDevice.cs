@@ -4,7 +4,7 @@ public interface IVirpilDevice
 {
     ushort PID { get; }
 
-    string Serial { get; }
+    string DeviceName { get; }
 
     /// <summary>
     /// Sends an LED command to the device
