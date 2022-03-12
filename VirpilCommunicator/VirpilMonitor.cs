@@ -148,7 +148,6 @@ public sealed class VirpilMonitor : IVirpilMonitor
                 }
             }
 
-            // TODO: update remove conditions
             foreach (var (pid, name) in existingDevices)
             {
                 _log.LogInformation("Device removed {DevicePid:x4} [{Name}]", pid, name);
