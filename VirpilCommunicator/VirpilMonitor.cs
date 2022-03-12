@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -22,15 +22,17 @@ public sealed class VirpilMonitor : IVirpilMonitor
 
     private readonly ILoggerFactory _loggerFactory;
     private readonly ILogger<VirpilMonitor> _log;
+    private readonly HashSet<ushort> _allVids;
 
     private static volatile VirpilMonitor? _instance;
 
     private static readonly object InitLock = new();
 
-    private VirpilMonitor(ILoggerFactory loggerFactory)
+    private VirpilMonitor(ILoggerFactory loggerFactory, IEnumerable<ushort>? extraVids)
     {
         _loggerFactory = loggerFactory;
         _log = loggerFactory.CreateLogger<VirpilMonitor>();
+        _allVids = new HashSet<ushort>(extraVids ?? Enumerable.Empty<ushort>()) { VID };
         DeviceList.Local.Changed += OnDeviceListChanged;
     }
 
@@ -39,15 +41,16 @@ public sealed class VirpilMonitor : IVirpilMonitor
     /// return the already-initialized instance.
     /// </summary>
     /// <param name="loggerFactory">LoggerFactory used when creating loggers for new VirpilDevice instances</param>
+    /// <param name="extraVids">Extra VIDs to monitor. Virpil default VID does not need to be included.</param>
     /// <returns>Instance of VirpilMonitor</returns>
-    public static VirpilMonitor Initialize(ILoggerFactory loggerFactory)
+    public static VirpilMonitor Initialize(ILoggerFactory loggerFactory, IEnumerable<ushort>? extraVids = null)
     {
         if (_instance is not null) return _instance;
 
         lock (InitLock)
         {
             if (_instance is not null) return _instance;
-            _instance = new VirpilMonitor(loggerFactory);
+            _instance = new VirpilMonitor(loggerFactory, extraVids);
             DeviceList.Local.RaiseChanged();
 
             return _instance;
@@ -129,7 +132,8 @@ public sealed class VirpilMonitor : IVirpilMonitor
             // if more items have queued up after this, they're more recent and we should respect them instead.
             if (position != Interlocked.Read(ref _changeCounter)) return;
 
-            var virpilDevices = list.GetHidDevices(VID).Where(d => d.GetMaxFeatureReportLength() > 0);
+            var virpilDevices = _allVids.SelectMany(v => list.GetHidDevices(v))
+                .Where(d => d.GetMaxFeatureReportLength() > 0);
 
             var existingDevices =
                 new HashSet<(ushort, string)>(_devices.SelectMany(pids =>
