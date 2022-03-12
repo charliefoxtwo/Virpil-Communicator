@@ -138,7 +138,8 @@ public sealed class VirpilMonitor : IVirpilMonitor
 
                     var device = new VirpilDevice(hidDevice, _loggerFactory.CreateLogger<VirpilDevice>());
 
-                    _devices.AddOrUpdate(device.PID, _ => new ConcurrentDictionary<string, IVirpilDevice>(),
+                    _devices.AddOrUpdate(device.PID,
+                        _ => new ConcurrentDictionary<string, IVirpilDevice> { [device.DeviceName] = device },
                         (_, dict) =>
                         {
                             dict.AddOrUpdate(device.DeviceName, device, (_, _) => device);
