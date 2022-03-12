@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <PackageId>Virpil.Communicator</PackageId>
-        <PackageVersion>2.0.0</PackageVersion>
+        <PackageVersion>3.0.0</PackageVersion>
         <Title>Virpil Communicator</Title>
         <Authors>charliefoxtwo</Authors>
         <Description>A small library for communicating with Virpil devices. Currently supports setting LED state.</Description>
@@ -17,10 +17,15 @@
         <PackageIconUrl>https://raw.githubusercontent.com/charliefoxtwo/Virpil-Communicator/main/VirpilCommunicator/resources/led.png</PackageIconUrl>
         <PackageIcon>led.png</PackageIcon>
         <PackageTags>dcs</PackageTags>
-        <PackageReleaseNotes> - hot plugging support enabled
- - static methods moved to VirpilMonitor singleton</PackageReleaseNotes>
-        <AssemblyVersion>2.0.0</AssemblyVersion>
-        <FileVersion>2.0.0</FileVersion>
+        <PackageReleaseNotes> - **breaking** Migrated to .NET 6
+ - `IVirpilDevice` interface added for mocking devices
+ - `IVirpilMonitor` interace added for mocking monitor
+ - Fixed crash on multiple devices with identical PIDs
+   - These will now need to be queried using the device name in addition to the PID
+ - Added support for additional VIDs, which can be optionally specified on initialization</PackageReleaseNotes>
+        <AssemblyVersion>3.0.0</AssemblyVersion>
+        <FileVersion>3.0.0</FileVersion>
+        <LangVersion>default</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>

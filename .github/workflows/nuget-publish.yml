@@ -13,7 +13,7 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 5.0.100
+          dotnet-version: 6.0.101
 
       # Publish
       - name: publish on version change
@@ -22,11 +22,11 @@ jobs:
         with:
           # Filepath of the project to be packaged, relative to root of repository
           PROJECT_FILE_PATH: VirpilCommunicator/VirpilCommunicator.csproj
-          
+
           # NuGet package id, used for version detection & defaults to project name
           PACKAGE_NAME: Virpil.Communicator
 
           # Regex pattern to extract version info in a capturing group
           VERSION_REGEX: ^\s*<PackageVersion>(.*)<\/PackageVersion>\s*$
-          
+
           NUGET_KEY: ${{secrets.NUGET_API_KEY}}
