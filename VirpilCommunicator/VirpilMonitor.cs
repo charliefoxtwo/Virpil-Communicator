@@ -82,39 +82,25 @@ public sealed class VirpilMonitor : IVirpilMonitor
         }
     }
 
-    /// <summary>
-    /// Attempts to fetch a device, if it exists.
-    /// </summary>
-    /// <param name="pid">The PID of the device to fetch</param>
-    /// <param name="virpilDevice">The device, if exactly a single device is found, otherwise null</param>
-    /// <returns><code>true</code> if exactly one device is found matching the parameters, otherwise false</returns>
+    /// <inheritdoc />
     public bool TryGetDevice(ushort pid, [MaybeNullWhen(false)] out IVirpilDevice virpilDevice)
     {
         return TryGetDevice(pid, null, out virpilDevice);
     }
 
-    /// <summary>
-    /// Attempts to fetch a device, if it exists.
-    /// </summary>
-    /// <param name="pid">The PID of the device to fetch</param>
-    /// <param name="serialNumber">The serial number of the USB device, or null to ignore</param>
-    /// <param name="virpilDevice">The device, if exactly a single device is found, otherwise null</param>
-    /// <returns><code>true</code> if exactly one device is found matching the parameters, otherwise false</returns>
-    public bool TryGetDevice(ushort pid, string? serialNumber, [MaybeNullWhen(false)] out IVirpilDevice virpilDevice)
+    /// <inheritdoc />
+    public bool TryGetDevice(ushort pid, string? deviceName, [MaybeNullWhen(false)] out IVirpilDevice virpilDevice)
     {
         virpilDevice = null;
         if (!_devices.TryGetValue(pid, out var pidMatches)) return false;
 
-        if (serialNumber is not null) return pidMatches.TryGetValue(serialNumber, out virpilDevice);
+        if (deviceName is not null) return pidMatches.TryGetValue(deviceName, out virpilDevice);
 
         virpilDevice = pidMatches.First().Value;
         return true;
     }
 
-    /// <summary>
-    /// Enumerates all usb devices with the Virpil VID connected to the system
-    /// </summary>
-    /// <returns>All connected virpil devices</returns>
+    /// <inheritdoc />
     public ICollection<IVirpilDevice> AllConnectedVirpilDevices => _devices.SelectMany(d => d.Value.Values).ToArray();
 
     private long _changeCounter;
@@ -137,36 +123,36 @@ public sealed class VirpilMonitor : IVirpilMonitor
 
             var existingDevices =
                 new HashSet<(ushort, string)>(_devices.SelectMany(pids =>
-                    pids.Value.Keys.Select(serial => (pids.Key, serial))));
+                    pids.Value.Keys.Select(name => (pids.Key, name))));
 
             foreach (var hidDevice in virpilDevices)
             {
                 if (_devices.TryGetValue((ushort)hidDevice.ProductID, out var pids) &&
-                    pids.ContainsKey(hidDevice.GetSerialNumber()))
+                    pids.ContainsKey(hidDevice.GetFriendlyName()))
                 {
-                    existingDevices.Remove(((ushort) hidDevice.ProductID, hidDevice.GetSerialNumber()));
+                    existingDevices.Remove(((ushort) hidDevice.ProductID, hidDevice.GetFriendlyName()));
                 }
                 else
                 {
-                    _log.LogInformation("Detected new device {DevicePid:x4} [{Serial}]", hidDevice.ProductID, hidDevice.GetSerialNumber());
+                    _log.LogInformation("Detected new device {DevicePid:x4} [{Name}]", hidDevice.ProductID, hidDevice.GetFriendlyName());
 
                     var device = new VirpilDevice(hidDevice, _loggerFactory.CreateLogger<VirpilDevice>());
 
                     _devices.AddOrUpdate(device.PID, _ => new ConcurrentDictionary<string, IVirpilDevice>(),
                         (_, dict) =>
                         {
-                            dict.AddOrUpdate(device.Serial, device, (_, _) => device);
+                            dict.AddOrUpdate(device.DeviceName, device, (_, _) => device);
                             return dict;
                         });
                 }
             }
 
             // TODO: update remove conditions
-            foreach (var (pid, serial) in existingDevices)
+            foreach (var (pid, name) in existingDevices)
             {
-                _log.LogInformation("Device removed {DevicePid:x4} [{Serial}]", pid, serial);
+                _log.LogInformation("Device removed {DevicePid:x4} [{Name}]", pid, name);
                 if (_devices.TryGetValue(pid, out var oldPids) &&
-                    oldPids.TryRemove(serial, out _) && oldPids.IsEmpty)
+                    oldPids.TryRemove(name, out _) && oldPids.IsEmpty)
                 {
                     _devices.TryRemove(pid, out _);
                 }

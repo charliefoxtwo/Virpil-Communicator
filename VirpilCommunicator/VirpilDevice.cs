@@ -8,7 +8,7 @@ public class VirpilDevice : IVirpilDevice, IDisposable
 {
     public ushort PID { get; }
 
-    public string Serial { get; }
+    public string DeviceName { get; }
 
     private readonly HidStream _stream;
 
@@ -17,20 +17,12 @@ public class VirpilDevice : IVirpilDevice, IDisposable
     public VirpilDevice(HidDevice device, ILogger<VirpilDevice> log)
     {
         PID = (ushort) device.ProductID;
-        Serial = device.GetSerialNumber();
+        DeviceName = device.GetFriendlyName();
         _stream = device.Open();
         _log = log;
     }
 
-    /// <summary>
-    /// Sends an LED command to the device
-    /// </summary>
-    /// <param name="boardType">The type of board the command is being sent to</param>
-    /// <param name="ledNumber">The LED number</param>
-    /// <param name="red">Power of the red hue</param>
-    /// <param name="green">Power of the green hue</param>
-    /// <param name="blue">Power of the blue hue</param>
-    /// <returns></returns>
+    /// <inheritdoc />
     public bool SendCommand(BoardType boardType, int ledNumber, LedPower red, LedPower green, LedPower blue)
     {
         var packet = PacketForCommand(boardType, ledNumber, red, green, blue);
