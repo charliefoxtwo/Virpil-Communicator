@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -77,6 +77,17 @@ public sealed class VirpilMonitor : IVirpilMonitor
                 return _instance;
             }
         }
+    }
+
+    /// <summary>
+    /// Attempts to fetch a device, if it exists.
+    /// </summary>
+    /// <param name="pid">The PID of the device to fetch</param>
+    /// <param name="virpilDevice">The device, if exactly a single device is found, otherwise null</param>
+    /// <returns><code>true</code> if exactly one device is found matching the parameters, otherwise false</returns>
+    public bool TryGetDevice(ushort pid, [MaybeNullWhen(false)] out IVirpilDevice virpilDevice)
+    {
+        return TryGetDevice(pid, null, out virpilDevice);
     }
 
     /// <summary>
