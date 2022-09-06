@@ -60,9 +60,10 @@ I'm not sure what this is for, but it's at the start of every data fragment
 #### 0x01: `0x66`
 For our purposes, this is the type of board you're communicating with. Possible values are:
  - `0x64`: default : used to set all leds back to their default settings that were set with the profile
- - `0x65`: add-board : I'm not sure what this is for
+ - `0x65`: add-board : Seems to be used for some joysticks, e.g. Constellation Alpha
  - `0x66`: on-board : used when the led you want to modify is on the device you're communicating with
  - `0x67`: slave-board : used when the led you want to modify is on a slave device of the device you're communicating with
+ - `0x68`: extra-board : Seems to be used for some joysticks, e.g. Alpha Prime
 
 #### 0x02: `0x05`
 This is the id of the command you are running. You can view these commands in the VPC_LED_Control tool, but I'll list them here too.
@@ -70,6 +71,7 @@ This is the id of the command you are running. You can view these commands in th
  - `0x01`-`0x04`: used for setting add-board leds 1-4
  - `0x05`-`0x18`: used for setting on-board leds 1-20
  - `0x19`-`0x2C`: used for setting slave-board leds 1-20
+ - `0x2D`-`0x36`: used for setting extra-board leds 1-10
 
 #### 0x05: `0x80`
 Defines the [color](#the-color-byte) the LED should be set to. 

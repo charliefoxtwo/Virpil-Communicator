@@ -18,4 +18,8 @@ public enum BoardType : byte
     /// LEDs which are on a slave board connected to a parent board which is directly connected to USB
     /// </summary>
     SlaveBoard = 0x67,
+    /// <summary>
+    /// LEDs used by boards such as the Alpha Prime (why? who knows!)
+    /// </summary>
+    ExtraBoard = 0x68,
 }
