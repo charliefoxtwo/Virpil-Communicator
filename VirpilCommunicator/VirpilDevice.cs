@@ -73,7 +73,8 @@ public class VirpilDevice : IVirpilDevice, IDisposable
             BoardType.AddBoard => (byte) ledNumber,
             BoardType.OnBoard => (byte) (4 + ledNumber),
             BoardType.SlaveBoard => (byte) (24 + ledNumber),
-            _ => throw new ArgumentOutOfRangeException(nameof(boardType), boardType, null)
+            BoardType.ExtraBoard => (byte) (44 + ledNumber),
+            _ => throw new ArgumentOutOfRangeException(nameof(boardType), boardType, null),
         };
     }
 
